@@ -10,6 +10,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMessageBox
 
 SCREEN_SIZE = (600, 450)
+STARS_CORDS = '37.530887,55.703118'
 
 
 class Example(QWidget):
@@ -20,8 +21,8 @@ class Example(QWidget):
         self.initUI()
 
     def getImage(self):
-        """Функция запроса файла с сервера и сохранения его на диске37.530887,55.703118"""
-        map_request = f"http://static-maps.yandex.ru/1.x/?ll={input()}&spn=10,0.002&l=map"
+        """Функция запроса файла с сервера и сохранения его на диске"""
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll={STARS_CORDS}&spn=10,0.002&l=map"
         response = requests.get(map_request)
 
         if not response:
@@ -59,6 +60,10 @@ class Example(QWidget):
             event.accept()  # Принимаем событие
         else:
             event.ignore()  # Игнорируем событие
+
+    """def keyPressEvent(self, e):
+        if e.key() == QtCore.Qt.Key_Q:
+            print(123)"""
 
 
 if __name__ == '__main__':
