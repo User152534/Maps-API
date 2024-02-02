@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMessageBox
 from PyQt5 import QtCore
 
 SCREEN_SIZE = (600, 450)
-STARS_CORDS = '37.530887,55.703118'
 
 
 class Example(QWidget):
@@ -19,12 +18,14 @@ class Example(QWidget):
         super().__init__()
         self.spn = 1
         self.tmp_file = None  # Временный файл, в который будем помещать изображение
+        self.x = 37.530887
+        self.y = 55.703118
         self.getImage()
         self.initUI()
 
     def getImage(self):
         """Функция запроса файла с сервера и сохранения его на диске"""
-        map_request = f"http://static-maps.yandex.ru/1.x/?ll={STARS_CORDS}&spn={self.spn},0.002&l=map"
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll={str(self.x)},{str(self.y)}&spn={self.spn},0.002&l=map"
         response = requests.get(map_request)
 
         if not response:
@@ -68,10 +69,19 @@ class Example(QWidget):
             event.ignore()  # Игнорируем событие
 
     def keyPressEvent(self, e):
-        if e.key() == QtCore.Qt.Key_PageUp:
+        if e.key() == QtCore.Qt.Key_PageUp and self.spn + 0.1 <= 180:
             self.spn += 0.1
-        elif QtCore.Qt.Key_PageDown:
+        elif e.key() == QtCore.Qt.Key_PageDown and self.spn - 0.1 >= 0:
             self.spn -= 0.1
+        elif e.key() == QtCore.Qt.Key_Left and self.x - 0.1 >= -180:
+            self.x -= 0.1
+        elif e.key() == QtCore.Qt.Key_Up and self.y + 0.1 <= 85:
+            self.y += 0.1
+        elif e.key() == QtCore.Qt.Key_Right and self.x + 0.1 <= 180:
+            self.x += 0.1
+        elif e.key() == QtCore.Qt.Key_Down and self.y - 0.1 >= -90:
+            self.y -= 0.1
+        print(self.x, self.y, self.spn)
         self.getImage()
         self.load_image()
 
