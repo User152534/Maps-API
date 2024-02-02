@@ -8,6 +8,7 @@ import sys
 import requests
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMessageBox
+from PyQt5 import QtCore
 
 SCREEN_SIZE = (600, 450)
 STARS_CORDS = '37.530887,55.703118'
@@ -16,13 +17,14 @@ STARS_CORDS = '37.530887,55.703118'
 class Example(QWidget):
     def __init__(self):
         super().__init__()
+        self.spn = 1
         self.tmp_file = None  # Временный файл, в который будем помещать изображение
         self.getImage()
         self.initUI()
 
     def getImage(self):
         """Функция запроса файла с сервера и сохранения его на диске"""
-        map_request = f"http://static-maps.yandex.ru/1.x/?ll={STARS_CORDS}&spn=10,0.002&l=map"
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll={STARS_CORDS}&spn={self.spn},0.002&l=map"
         response = requests.get(map_request)
 
         if not response:
@@ -48,6 +50,10 @@ class Example(QWidget):
         self.image.resize(*SCREEN_SIZE)
         self.image.setPixmap(self.pixmap)
 
+    def load_image(self):
+        self.pixmap = QPixmap(self.tmp_file)
+        self.image.setPixmap(self.pixmap)
+
     def closeEvent(self, event):
         """Переопределяем стандартный метод закрытия окна"""
         close = QMessageBox()
@@ -61,9 +67,13 @@ class Example(QWidget):
         else:
             event.ignore()  # Игнорируем событие
 
-    """def keyPressEvent(self, e):
-        if e.key() == QtCore.Qt.Key_Q:
-            print(123)"""
+    def keyPressEvent(self, e):
+        if e.key() == QtCore.Qt.Key_PageUp:
+            self.spn += 0.1
+        elif QtCore.Qt.Key_PageDown:
+            self.spn -= 0.1
+        self.getImage()
+        self.load_image()
 
 
 if __name__ == '__main__':
